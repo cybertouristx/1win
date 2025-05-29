@@ -1,40 +1,41 @@
-const confetti = window.confetti.create(
-  document.getElementById('confetti-canvas'),
-  { resize: true, useWorker: true }
-);
+const symbols = [
+  'gift.png',
+  'cherry.png',
+  'watermelon.png',
+  'strawberry.png',
+  'bell.png',
+  'cherry2.png'
+];
 
-const reels = ['r1','r2','r3'].map(id=>document.getElementById(id));
-const spinBtn = document.getElementById('spin');
-const claimBtn = document.getElementById('claim');
+let tries = 3;
+const triesLabel = document.getElementById('tries');
+const btn = document.getElementById('spin');
+const reels = [
+  document.getElementById('r1'),
+  document.getElementById('r2'),
+  document.getElementById('r3')
+];
 
-spinBtn.onclick = async ()=>{
-  spinBtn.disabled = true;
-  for(let i=0;i<reels.length;i++){
-    await spinReel(reels[i], 600 + i*200);
-  }
-  confetti({ particleCount:100, spread:70, origin:{ y:0.4 } });
-  claimBtn.style.display = 'inline-block';
-};
+// Запускаем спин
+btn.addEventListener('click', () => {
+  if (tries <= 0) return;
+  tries--;
+  triesLabel.textContent = tries;
 
-claimBtn.onclick = ()=>{
-  alert('Вы получили 70 FS 🎉');
-};
-
-function spinReel(el, duration){
-  return new Promise(res=>{
-    const totalFrames = 5;
-    const frameHeight = 100;
-    let frame = 0;
-    const start = performance.now();
-    const iv = setInterval(()=>{
-      frame = (frame + 1) % totalFrames;
-      el.style.backgroundPosition = `0 -${frame*frameHeight}px`;
-      if(performance.now() - start > duration){
-        clearInterval(iv);
-        const finalFrame = Math.floor(Math.random()*totalFrames);
-        el.style.backgroundPosition = `0 -${finalFrame*frameHeight}px`;
-        setTimeout(res, 200);
-      }
-    }, 50);
+  // Для каждого барабана выбираем случайный символ
+  reels.forEach(img => {
+    const rnd = Math.floor(Math.random() * symbols.length);
+    img.src = `img/${symbols[rnd]}`;
   });
-}
+
+  // Если попытки закончились — отправляем данные в бота
+  if (tries === 0) {
+    btn.disabled = true;
+    window.Telegram.WebApp.sendData(JSON.stringify({
+      event: 'bonus_spins',
+      spins: 3,
+      result: reels.map(img => img.src.split('/').pop())
+    }));
+  }
+});
+
