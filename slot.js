@@ -1,62 +1,56 @@
 // slot.js
 
-// Разворачиваем Web App под полный экран
+// Telegram WebApp
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-// Список имён файлов в папке img/
-const symbols = [
-  'arbuz.png',
-  'gift.png',
-  'kiwi.png',
-  'lemon.png',
-  'persik.png',
-  'vinograd.png',
-];
+// Список имён файлов картинок (без расширения)
+const symbols = ['gift','arbuz','kiwi','lemon','persik','vinograd'];
 
-// DOM-элементы
-const reels = [
+let tries = 3;
+const triesEl = document.getElementById('tries');
+const btn     = document.getElementById('spin');
+const reels   = [
   document.getElementById('r1'),
   document.getElementById('r2'),
-  document.getElementById('r3'),
+  document.getElementById('r3')
 ];
-const triesEl = document.getElementById('tries');
-const spinBtn = document.getElementById('spin');
 
-// Количество попыток
-let tries = 3;
-triesEl.textContent = tries;
-
-// Обработчик клика
-spinBtn.addEventListener('click', () => {
+// Функция запуска спина
+btn.addEventListener('click', () => {
   if (tries <= 0) return;
-
-  // Уменьшаем счётчик и отображаем
   tries--;
   triesEl.textContent = tries;
+  btn.disabled = true;
+  
+  // Добавим CSS-класс для анимации (если у вас есть .spin в style.css)
+  reels.forEach(r => r.classList.add('spin'));
 
-  // Перебираем все барабаны и ставим рандомный символ
-  reels.forEach(img => {
-    const idx = Math.floor(Math.random() * symbols.length);
-    img.src = `img/${symbols[idx]}`;
-  });
-
-  // Если это была последняя попытка — финал
-  if (tries === 0) {
-    spinBtn.disabled = true;
-    spinBtn.textContent = 'Попытки кончились';
-
-    // 1) Запускаем конфети
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.4 }
+  setTimeout(() => {
+    // Проставляем конечные картинки
+    reels.forEach((r, i) => {
+      if (tries === 0) {
+        // На последнем спине — всегда подарок
+        r.src = `img/gift.png`;
+      } else {
+        // Иначе выбираем случайный символ (можно включить gift, если хотите шанс)
+        const idx = Math.floor(Math.random() * symbols.length);
+        r.src = `img/${symbols[idx]}.png`;
+      }
+      r.classList.remove('spin');
     });
 
-    // 2) Шлём в бота событие о выигрыше
-    tg.sendData(JSON.stringify({
-      event: 'won_bonus',
-      amount: 70
-    }));
-  }
+    if (tries === 0) {
+      // Запускаем конфетти
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.3 } });
+      // Шлём в Телеграм-бота событие о том, что юзер выиграл 70 фриспинов
+      tg.sendData(JSON.stringify({ event: 'bonus_spins', spins: 70 }));
+      // Меняем кнопку на сбор бонуса
+      btn.textContent = 'Забрать бонус';
+      btn.disabled = false;
+    } else {
+      // Разрешаем новый спин
+      btn.disabled = false;
+    }
+  }, 1000);
 });
