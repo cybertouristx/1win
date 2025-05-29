@@ -1,27 +1,40 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Слот 1win</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Ваши стили -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Библиотека для запуска конфети -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"
+    defer
+  ></script>
+
   <!-- Telegram Web App -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
+
+  <!-- Логика слота -->
+  <script src="slot.js" defer></script>
 </head>
+
 <body>
   <div id="slot">
-    <h2>Осталось попыток: <span id="tries">3</span></h2>
+    <h2>
+      Осталось попыток:
+      <span id="tries">3</span>
+    </h2>
+
     <div class="reels">
-      <img id="r1" src="img/gift.png" class="reel">
-      <img id="r2" src="img/cherry.png" class="reel">
-      <img id="r3" src="img/watermelon.png" class="reel">
+      <img id="r1" src="img/gift.png" alt="Барабан 1" class="reel" />
+      <img id="r2" src="img/arbuz.png" alt="Барабан 2" class="reel" />
+      <img id="r3" src="img/kiwi.png" alt="Барабан 3" class="reel" />
     </div>
+
     <button id="spin">Играть</button>
   </div>
-
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-  </script>
-  <script src="slot.js"></script>
 </body>
 </html>
