@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Слот-машина — 70 FS</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- библиотека конфетти -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Слот 1win</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Telegram Web App -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-  <div class="slot-machine">
-    <div class="reel" id="r1"></div>
-    <div class="reel" id="r2"></div>
-    <div class="reel" id="r3"></div>
+  <div id="slot">
+    <h2>Осталось попыток: <span id="tries">3</span></h2>
+    <div class="reels">
+      <img id="r1" src="img/gift.png" class="reel">
+      <img id="r2" src="img/cherry.png" class="reel">
+      <img id="r3" src="img/watermelon.png" class="reel">
+    </div>
+    <button id="spin">Играть</button>
   </div>
 
-  <button id="spin">Крутить</button>
-  <button id="claim" style="display:none">Забрать 70 FS</button>
-
-  <canvas id="confetti-canvas"></canvas>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+  </script>
   <script src="slot.js"></script>
 </body>
 </html>
