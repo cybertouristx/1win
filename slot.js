@@ -1,41 +1,62 @@
+// slot.js
+
+// Разворачиваем Web App под полный экран
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+// Список имён файлов в папке img/
 const symbols = [
+  'arbuz.png',
   'gift.png',
-  'cherry.png',
-  'watermelon.png',
-  'strawberry.png',
-  'bell.png',
-  'cherry2.png'
+  'kiwi.png',
+  'lemon.png',
+  'persik.png',
+  'vinograd.png',
 ];
 
-let tries = 3;
-const triesLabel = document.getElementById('tries');
-const btn = document.getElementById('spin');
+// DOM-элементы
 const reels = [
   document.getElementById('r1'),
   document.getElementById('r2'),
-  document.getElementById('r3')
+  document.getElementById('r3'),
 ];
+const triesEl = document.getElementById('tries');
+const spinBtn = document.getElementById('spin');
 
-// Запускаем спин
-btn.addEventListener('click', () => {
+// Количество попыток
+let tries = 3;
+triesEl.textContent = tries;
+
+// Обработчик клика
+spinBtn.addEventListener('click', () => {
   if (tries <= 0) return;
-  tries--;
-  triesLabel.textContent = tries;
 
-  // Для каждого барабана выбираем случайный символ
+  // Уменьшаем счётчик и отображаем
+  tries--;
+  triesEl.textContent = tries;
+
+  // Перебираем все барабаны и ставим рандомный символ
   reels.forEach(img => {
-    const rnd = Math.floor(Math.random() * symbols.length);
-    img.src = `img/${symbols[rnd]}`;
+    const idx = Math.floor(Math.random() * symbols.length);
+    img.src = `img/${symbols[idx]}`;
   });
 
-  // Если попытки закончились — отправляем данные в бота
+  // Если это была последняя попытка — финал
   if (tries === 0) {
-    btn.disabled = true;
-    window.Telegram.WebApp.sendData(JSON.stringify({
-      event: 'bonus_spins',
-      spins: 3,
-      result: reels.map(img => img.src.split('/').pop())
+    spinBtn.disabled = true;
+    spinBtn.textContent = 'Попытки кончились';
+
+    // 1) Запускаем конфети
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.4 }
+    });
+
+    // 2) Шлём в бота событие о выигрыше
+    tg.sendData(JSON.stringify({
+      event: 'won_bonus',
+      amount: 70
     }));
   }
 });
-
